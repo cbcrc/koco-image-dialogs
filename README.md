@@ -90,17 +90,21 @@ Components.prototype.registerComponents = function() {
     // image picker dialogs
     dialoger.registerDialog('content');
     dialoger.registerDialog('conceptual-image', {
-        basePath: 'components/image-dialogs/conceptual-image-dialog'
+        basePath: 'bower_components/koco-image-dialogs/src/conceptual-image-dialog'
     });
     dialoger.registerDialog('concrete-image', {
-        basePath: 'components/image-dialogs/concrete-image-dialog'
+        basePath: 'bower_components/koco-image-dialogs/src/concrete-image-dialog'
     });
     koUtilities.registerComponent('cloudinary-image-editor', {
-        basePath: 'components/image-dialogs/concrete-image-dialog/cloudinary-image-editor'
+        basePath: 'bower_components/koco-image-dialogs/src/concrete-image-dialog/cloudinary-image-editor'
     });
     koUtilities.registerComponent('concrete-image-editor', {
-        basePath: 'components/image-dialogs/concrete-image-dialog/concrete-image-editor'
+        basePath: 'bower_components/koco-image-dialogs/src/concrete-image-dialog/concrete-image-editor'
     });
     ...
 };
 ```
+
+And if you plan to use it, include the concrete image dialog's less file...
+
+`@import "../bower_components/koco-image-dialogs/src/concrete-image-dialog/concrete-image-dialog.less";`
