@@ -1,0 +1,42 @@
+<content-dialog-edit-form params="undoSelection: undoSelection.bind($data), undoSelectionVisible: undoSelectionVisible, save: save.bind($data)">
+    <!-- ko with: selectedItem -->
+    <!-- ko template: 'components/image-dialogs/image-dialog-edit' -->
+    <!-- /ko -->
+    <!-- ko if: $parent.isCloudinary -->
+    <cloudinary-image-editor params="selectedConcreteImage: $parent.selectedConcreteImage, selectedImage: $data"></cloudinary-image-editor>
+    <!-- /ko -->
+     <!-- ko ifnot: $parent.isCloudinary -->
+    <concrete-image-editor params="selectedConcreteImage: $parent.selectedConcreteImage, selectedImage: $data"></concrete-image-editor>
+    <!-- /ko -->
+    <div class="form-group">
+        <label for="image-alt">Description pour les non-voyants et les malvoyants</label>
+        <input type="text" name="image-alt" class="form-control" data-bind="value: alt">
+    </div>
+    <div class="form-group">
+        <label for="image-legend">Légende</label>
+        <input type="text" name="image-legend" class="form-control" data-bind="value: legend">
+    </div>
+    <div class="form-group">
+        <label for="image-credits">Crédits</label>
+        <input type="text" name="image-credits" class="form-control" data-bind="value: imageCredits">
+    </div>
+    <div class="form-group">
+        <label for="press-agency">Agence</label>
+        <input type="text" id="press-agency" class="form-control" data-bind="value: pressAgency">
+    </div>
+    <div class="form-group">
+        <label>Alignement</label>
+        <div>
+            <label class="search-radio">
+                <input type="radio" name="align" value="left" data-bind="checked: $parent.align"> Gauche
+            </label>
+            <label class="search-radio">
+                <input type="radio" name="align" value="center" data-bind="checked: $parent.align"> Centre
+            </label>
+            <label class="search-radio">
+                <input type="radio" name="align" value="right" data-bind="checked: $parent.align"> Droite
+            </label>
+        </div>
+    </div>
+    <!-- /ko -->
+</content-dialog-edit-form>
