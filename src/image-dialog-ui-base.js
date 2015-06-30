@@ -82,10 +82,6 @@ define([
             var self = this;
 
             var resource = this.selectedItem();
-            // deleteImage-noneselected
-            // deleteImage-confirm
-            // deleteImage-success
-            // deleteImage-error
             if (typeof resource === 'undefined' || resource === null) {
                 toastr.error('Vous devez sélectionner une image.');
                 return false;

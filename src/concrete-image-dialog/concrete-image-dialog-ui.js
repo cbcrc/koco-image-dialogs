@@ -10,10 +10,11 @@ define([
         '../image-dialog-ui-base',
         'content-dialog-base-viewmodel',
         'mapping-utilities',
-        'signal-emitter'
+        'signal-emitter',
+        'i18next'
     ],
     function(template, ko, $, ImageDialogBaseViewModel,
-        ContentDialogViewModel, koMappingUtilities, emitter) {
+        ContentDialogViewModel, koMappingUtilities, emitter, i18n) {
         'use strict';
 
         var defaultContentTypeId = '20';
@@ -35,6 +36,7 @@ define([
 
             self.params = self.getParams(settings);
             self.api = self.params.api;
+            self.i18n = i18n;
 
             var contentDialogViewModelParams = {
                 dialogTitle: 'Images',
@@ -42,8 +44,21 @@ define([
                 defaultItem: defaultItem,
                 close: settings.close,
                 isSearchable: true,
-                api: self.api
+                api: self.api,
             };
+            
+            self.translated = {
+                closeLabel: self.i18n.t('koco-image-dialogs.dialog-cancel'),
+                saveLabel: self.i18n.t('koco-image-dialogs.dialog-save'),
+                altLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-alt'),
+                legendLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-legend'),
+                creditsLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-credits'),
+                agencyLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-agency'),
+                alignmentLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-alignment'),
+                leftLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-left'),
+                centreLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-center'),
+                rightLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-right')
+            }
 
             ContentDialogViewModel.call(self, contentDialogViewModelParams);
 
@@ -146,7 +161,7 @@ define([
             var self = this;
 
             if (!self.selectedConcreteImage()) {
-                return 'Vous devez sélectionner un format.';
+                return self.i18n.t('koco-image-dialogs.concrete-image-dialog-select-image-format');
             }
 
             ContentDialogViewModel.prototype.validate.call(self);

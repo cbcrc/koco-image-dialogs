@@ -31,9 +31,9 @@ define([
             self.params = self.getParams(settings);
             
             self.translated = {
-                dialogTitle: i18n.t('image-dialogs.dialog-title'),
-                dialogCancel: i18n.t('image-dialogs.dialog-cancel'),
-                dialogSave: i18n.t('image-dialogs.dialog-save'),
+                dialogTitle: i18n.t('koco-image-dialogs.dialog-title'),
+                dialogCancel: i18n.t('koco-image-dialogs.dialog-cancel'),
+                dialogSave: i18n.t('koco-image-dialogs.dialog-save'),
             };
 
             var originalItem = null;

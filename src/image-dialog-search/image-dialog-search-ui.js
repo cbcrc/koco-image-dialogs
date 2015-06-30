@@ -62,7 +62,13 @@ define([
             }
 
             self.translated = {
-                dateInterval: i18n.t('image-dialogs.date-interval'),
+                dateInterval: i18n.t('koco-image-dialogs.date-interval'),
+                defaultTitle: i18n.t('koco-image-dialogs.notitle'),
+                myImages: i18n.t('koco-image-dialogs.image-search-results-default-title'),
+                allDirectoriesPlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-all-directories'),
+                allSubDirectoriesPlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-all-subdirectories'),
+                keywordsPlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-keywords'),
+                zonePlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-zone')
             };
 
             self.apiResourceName = ko.pureComputed(function() {
