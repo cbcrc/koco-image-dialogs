@@ -1,6 +1,6 @@
 {
   "name": "koco-image-dialogs",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "homepage": "https://github.com/cbcrc/koco-image-dialogs",
   "authors": [
     "David D'Amico <david.damico@cbc.ca>"
@@ -28,7 +28,7 @@
     "lodash": "^3.0.0",
     "moment": "2.9.0",
     "koco-array-utilities": "^0.1.0",
-    "koco-content-dialog-utilities": "^0.1.0",
+    "koco-content-dialog-utilities": "^0.2.0",
     "koco-mapping-utilities": "^0.1.0",
     "koco-modaler": "^0.2.0",
     "koco-router": "^0.3.0",
