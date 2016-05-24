@@ -1,7 +1,3 @@
-define([], function() {
-    'use strict';
-
-    return {
-        searchFields: null
-    };
-});
+export default {
+    searchFields: null
+};

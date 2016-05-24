@@ -1,113 +1,107 @@
 //Notes: Ce plugin recoit un Media et retourne un Media (voir Scoop API)
 
-define([
-        'knockout',
-        'jquery',
-        'content-dialog-base-viewmodel',
-        'toastr',
-        'lodash',
-        'router',
-        'mapping-utilities',
-        'modaler',
-        'signal-emitter'
-    ],
-    function(ko, $,
-        ContentDialogViewModel,
-        toastr, _, router, koMappingUtilities, modaler, signalEmitter) {
-        'use strict';
+import ko from 'knockout';
+import $ from 'jquery';
+import ContentDialogViewModel from 'content-dialog-base-viewmodel';
+import toastr from 'toastr';
+import _ from 'lodash';
+import router from 'router';
+import koMappingUtilities from 'mapping-utilities';
+import modaler from 'modaler';
+import signalEmitter from 'signal-emitter';
 
-        var defaultParams = {
-            dimensions: [],
-            contentTypeIds: [20]
-        };
 
-        var ImageDialogBaseViewModel = function() {};
+var defaultParams = {
+    dimensions: [],
+    contentTypeIds: [20]
+};
 
-        ImageDialogBaseViewModel.prototype = Object.create(ContentDialogViewModel.prototype);
-        ImageDialogBaseViewModel.prototype.constructor = ImageDialogBaseViewModel;
+var ImageDialogBaseViewModel = function() {};
 
-        ImageDialogBaseViewModel.prototype.getHasSelectedItem = function() {
-            var self = this;
+ImageDialogBaseViewModel.prototype = Object.create(ContentDialogViewModel.prototype);
+ImageDialogBaseViewModel.prototype.constructor = ImageDialogBaseViewModel;
 
-            var selectedItem = koMappingUtilities.toJS(self.selectedItem);
+ImageDialogBaseViewModel.prototype.getHasSelectedItem = function() {
+    var self = this;
 
-            return selectedItem && selectedItem.idAsUrl;
-        };
+    var selectedItem = koMappingUtilities.toJS(self.selectedItem);
 
-        ImageDialogBaseViewModel.prototype.getIsCloudinary = function() {
-            var self = this;
+    return selectedItem && selectedItem.idAsUrl;
+};
 
-            var selectedItem = koMappingUtilities.toJS(self.selectedItem);
+ImageDialogBaseViewModel.prototype.getIsCloudinary = function() {
+    var self = this;
 
-            if (selectedItem && selectedItem.contentType && selectedItem.contentType.id === 19) {
-                return true;
-            }
+    var selectedItem = koMappingUtilities.toJS(self.selectedItem);
 
-            return false;
-        };
+    if (selectedItem && selectedItem.contentType && selectedItem.contentType.id === 19) {
+        return true;
+    }
 
-        ImageDialogBaseViewModel.prototype.getParams = function(settings) {
-            var self = this;
+    return false;
+};
 
-            var params = $.extend({}, defaultParams, settings.params.settings);
+ImageDialogBaseViewModel.prototype.getParams = function(settings) {
+    var self = this;
 
-            if (router.context().route.url.indexOf('mu-contents') > -1) {
-                params.contentTypeIds = [19, 20];
-            }
+    var params = $.extend({}, defaultParams, settings.params.settings);
 
-            return params;
-        };
+    if (router.context().route.url.indexOf('mu-contents') > -1) {
+        params.contentTypeIds = [19, 20];
+    }
 
-        ImageDialogBaseViewModel.prototype.canDeleteImage = function() {
-            var self = this;
+    return params;
+};
 
-            var resource = koMappingUtilities.toJS(self.selectedItem);
+ImageDialogBaseViewModel.prototype.canDeleteImage = function() {
+    var self = this;
 
-            if (resource && resource.contentType && resource.contentType.id === 20 && resource.idAsUrl) {
-                return true;
-            }
+    var resource = koMappingUtilities.toJS(self.selectedItem);
 
-            return false;
-        };
+    if (resource && resource.contentType && resource.contentType.id === 20 && resource.idAsUrl) {
+        return true;
+    }
 
-        ImageDialogBaseViewModel.prototype.isSame = function(item) {
-            var self = this;
+    return false;
+};
 
-            var selectedItem = koMappingUtilities.toJS(self.selectedItem);
+ImageDialogBaseViewModel.prototype.isSame = function(item) {
+    var self = this;
 
-            return selectedItem && item && selectedItem.idAsUrl === item.idAsUrl;
-        };
+    var selectedItem = koMappingUtilities.toJS(self.selectedItem);
 
-        ImageDialogBaseViewModel.prototype.deleteImage = function() {
-            var self = this;
+    return selectedItem && item && selectedItem.idAsUrl === item.idAsUrl;
+};
 
-            var resource = this.selectedItem();
-            if (typeof resource === 'undefined' || resource === null) {
-                toastr.error('Vous devez sélectionner une image.');
-                return false;
-            }
+ImageDialogBaseViewModel.prototype.deleteImage = function() {
+    var self = this;
 
-            modaler.show('confirm', {
-                message: 'Attention, vous vous apprêtez à supprimer cette image de la banque d\'images (GHT1T). Voulez-vous réellement supprimer cette image?'
-            }).then(function(confirm) {
-                if (confirm) {
+    var resource = this.selectedItem();
+    if (typeof resource === 'undefined' || resource === null) {
+        toastr.error('Vous devez sélectionner une image.');
+        return false;
+    }
 
-                    var idAsUrl = resource.idAsUrl();
-                    
-                    // @TODO test this more thoroughly, we are relying on the remove binding to provide a context that owns self.api
-                    self.api.delete(_.template('images?url=<%= id %>')({
-                            id: idAsUrl
-                        }))
-                    .done(function() {
-                        signalEmitter.dispatch('image:removed', [idAsUrl]);
-                        self.selectedItem(null);
-                        toastr.info('L\'image a été supprimée.');
-                    }).fail(function(jqXHR, textStatus, errorThrown) {
-                        toastr.error('Impossible de supprimer l\'image.');
-                    });
-                }
-            });
-        };
+    modaler.show('confirm', {
+        message: 'Attention, vous vous apprêtez à supprimer cette image de la banque d\'images (GHT1T). Voulez-vous réellement supprimer cette image?'
+    }).then(function(confirm) {
+        if (confirm) {
 
-        return ImageDialogBaseViewModel;
+            var idAsUrl = resource.idAsUrl();
+
+            // @TODO test this more thoroughly, we are relying on the remove binding to provide a context that owns self.api
+            self.api.delete(_.template('images?url=<%= id %>')({
+                    id: idAsUrl
+                }))
+                .done(function() {
+                    signalEmitter.dispatch('image:removed', [idAsUrl]);
+                    self.selectedItem(null);
+                    toastr.info('L\'image a été supprimée.');
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    toastr.error('Impossible de supprimer l\'image.');
+                });
+        }
     });
+};
+
+export default ImageDialogBaseViewModel;
