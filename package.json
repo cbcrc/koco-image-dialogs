@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "i18next": "^3.1.0",
-    "jquery": "^2.2.4",
+    "jquery": "^2.1.4",
     "knockout": "^3.4.0",
     "koco": "^1.0.0",
     "koco-array-utilities": "^1.1.0",
@@ -25,7 +25,7 @@
     "koco-modaler": "^1.1.0",
     "koco-signal-emitter": "^1.1.0",
     "koco-toastr": "^1.1.0",
-    "lodash": "^4.13.1",
+    "lodash": "^4.6.1",
     "moment": "2.13.0"
   },
   "devDependencies": {

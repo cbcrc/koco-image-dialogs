@@ -3,7 +3,6 @@
 //il recoit l'url de l'image et fait un appel à l'api pour obtenir l'information nécessaire
 //en ce sens, il devrait peut-être être renommé (on pourrait éventullement avoir un vrai concrete-image-dialog)
 
-import template from 'text!./concrete-image-dialog.html';
 import ko from 'knockout';
 import $ from 'jquery';
 import ImageDialogBaseViewModel from '../image-dialog-ui-base';

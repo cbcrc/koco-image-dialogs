@@ -1,4 +1,3 @@
-import template from 'text!./concrete-image-editor.html';
 import ko from 'knockout';
 import $ from 'jquery';
 import _ from 'lodash';

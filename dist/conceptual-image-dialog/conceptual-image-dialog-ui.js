@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _conceptualImageDialog = require('text!./conceptual-image-dialog.html');
-
-var _conceptualImageDialog2 = _interopRequireDefault(_conceptualImageDialog);
-
 var _knockout = require('knockout');
 
 var _knockout2 = _interopRequireDefault(_knockout);
@@ -24,13 +20,13 @@ var _contentDialogBaseViewmodel = require('content-dialog-base-viewmodel');
 
 var _contentDialogBaseViewmodel2 = _interopRequireDefault(_contentDialogBaseViewmodel);
 
-var _arrayUtilities = require('array-utilities');
+var _kocoArrayUtilities = require('koco-array-utilities');
 
-var _arrayUtilities2 = _interopRequireDefault(_arrayUtilities);
+var _kocoArrayUtilities2 = _interopRequireDefault(_kocoArrayUtilities);
 
-var _mappingUtilities = require('mapping-utilities');
+var _kocoMappingUtilities = require('koco-mapping-utilities');
 
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
 
 var _i18next = require('i18next');
 
@@ -65,8 +61,8 @@ var ConceptualImageDialogViewModel = function ConceptualImageDialogViewModel(set
 
     var originalItem = null;
 
-    var conceptualImage = _mappingUtilities2.default.toJS(settings.params.conceptualImage);
-    if (conceptualImage && _arrayUtilities2.default.isNotEmptyArray(conceptualImage.concreteImages)) {
+    var conceptualImage = _kocoMappingUtilities2.default.toJS(settings.params.conceptualImage);
+    if (conceptualImage && _kocoArrayUtilities2.default.isNotEmptyArray(conceptualImage.concreteImages)) {
         //TODO: Est-ce que le extend defaultItem est nécessaire!?
         originalItem = _jquery2.default.extend({}, defaultItem, conceptualImage);
     }
@@ -96,5 +92,5 @@ exports.default = {
             return new ConceptualImageDialogViewModel(params, componentInfo);
         }
     },
-    template: _conceptualImageDialog2.default
+    template: template
 };

@@ -1,38 +1,10 @@
-'use strict';
+import ko from 'knockout';
+import $ from 'jquery';
+import _ from 'lodash';
+import imageUtilities from from 'koco-image-utilities';
+import koMappingUtilities from 'koco-mapping-utilities';
+import KoDisposer from 'koco-disposer';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _concreteImageEditor = require('text!./concrete-image-editor.html');
-
-var _concreteImageEditor2 = _interopRequireDefault(_concreteImageEditor);
-
-var _knockout = require('knockout');
-
-var _knockout2 = _interopRequireDefault(_knockout);
-
-var _jquery = require('jquery');
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _imageUtilities = require('image-utilities');
-
-var _imageUtilities2 = _interopRequireDefault(_imageUtilities);
-
-var _mappingUtilities = require('mapping-utilities');
-
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
-
-var _disposer = require('disposer');
-
-var _disposer2 = _interopRequireDefault(_disposer);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
 args :
@@ -43,38 +15,38 @@ args :
     }
 */
 
-var ConcreteImagesPickerViewModel = function ConcreteImagesPickerViewModel(params, componentInfo) {
+var ConcreteImagesPickerViewModel = function(params, componentInfo) {
     var self = this;
 
     self.params = params;
 
-    var selectedImage = _mappingUtilities2.default.toJS(self.params.selectedImage);
-    var selectedConcreteImage = _mappingUtilities2.default.toJS(self.params.selectedConcreteImage);
+    var selectedImage = koMappingUtilities.toJS(self.params.selectedImage);
+    var selectedConcreteImage = koMappingUtilities.toJS(self.params.selectedConcreteImage);
 
     var options = buildOptions(selectedImage);
 
-    self.options = _knockout2.default.observableArray(options);
+    self.options = ko.observableArray(options);
 
     if (!selectedConcreteImage) {
         //Attention: 2 type de DefaultConcreteImage (1 pour les previews de scoop et celui ci pour le default concrete image...)
         //en ce moment on est chanceux, c'est la meme taille qui est utilisée par défaut mais il faudra ajuster si ca change
-        selectedConcreteImage = _imageUtilities2.default.getDefaultConcreteImage(selectedImage);
+        selectedConcreteImage = imageUtilities.getDefaultConcreteImage(selectedImage);
     }
 
     var selectedOption = getConcreteImageHref(selectedConcreteImage);
 
-    self.selectedOption = _knockout2.default.observable(selectedOption);
+    self.selectedOption = ko.observable(selectedOption);
 
     self.params.selectedConcreteImage(selectedConcreteImage);
 
-    self.koDisposer = new _disposer2.default();
+    self.koDisposer = new KoDisposer();
 
-    self.koDisposer.add(self.selectedOption.subscribe(function (newValue) {
+    self.koDisposer.add(self.selectedOption.subscribe(function(newValue) {
         selectedOption = newValue;
         var concreteImage = null;
 
         if (selectedOption) {
-            concreteImage = _lodash2.default.find(selectedImage.concreteImages, function (c) {
+            concreteImage = _.find(selectedImage.concreteImages, function(c) {
                 return c.mediaLink.href == selectedOption;
             });
         }
@@ -82,18 +54,18 @@ var ConcreteImagesPickerViewModel = function ConcreteImagesPickerViewModel(param
         self.params.selectedConcreteImage(concreteImage || null);
     }));
 
-    self.koDisposer.add(self.params.$raw.selectedImage.subscribe(function () {
-        selectedImage = _mappingUtilities2.default.toJS(self.params.selectedImage);
+    self.koDisposer.add(self.params.$raw.selectedImage.subscribe(function() {
+        selectedImage = koMappingUtilities.toJS(self.params.selectedImage);
         options = buildOptions(selectedImage);
         self.options(options);
-        selectedConcreteImage = _imageUtilities2.default.getDefaultConcreteImage(selectedImage);
+        selectedConcreteImage = imageUtilities.getDefaultConcreteImage(selectedImage);
         selectedOption = getConcreteImageHref(selectedConcreteImage);
         self.selectedOption(selectedOption);
         self.params.selectedConcreteImage(selectedConcreteImage);
     }));
 };
 
-ConcreteImagesPickerViewModel.prototype.dispose = function () {
+ConcreteImagesPickerViewModel.prototype.dispose = function() {
     var self = this;
 
     self.koDisposer.dispose();
@@ -116,7 +88,7 @@ function buildOptions(selectedImage) {
         for (var i = 0; i < selectedImage.concreteImages.length; i++) {
             var concreteImage = selectedImage.concreteImages[i];
 
-            var group = _lodash2.default.find(options, function (g) {
+            var group = _.find(options, function(g) {
                 return g.ratio === concreteImage.dimensionRatio;
             });
 
@@ -153,11 +125,11 @@ function Option(concreteImage) {
     this.id = concreteImage.mediaLink.href;
 }
 
-exports.default = {
+export default {
     viewModel: {
-        createViewModel: function createViewModel(params, componentInfo) {
+        createViewModel: function(params, componentInfo) {
             return new ConcreteImagesPickerViewModel(params, componentInfo);
         }
     },
-    template: _concreteImageEditor2.default
+    template: template
 };

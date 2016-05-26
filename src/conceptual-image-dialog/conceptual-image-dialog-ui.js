@@ -1,4 +1,3 @@
-import template from 'text!./conceptual-image-dialog.html';
 import ko from 'knockout';
 import $ from 'jquery';
 import ImageDialogBaseViewModel from '../image-dialog-ui-base';

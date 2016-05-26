@@ -1,4 +1,3 @@
-import template from 'text!./image-dialog-search.html';
 import ko from 'knockout';
 import $ from 'jquery';
 import lastSearchSnapshot from './last-search-snapshot';

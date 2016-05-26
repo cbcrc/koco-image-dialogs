@@ -1,4 +1,3 @@
-import template from 'text!./cloudinary-image-editor.html';
 import ko from 'knockout';
 import _ from 'lodash';
 import imageUtilities from from 'koco-image-utilities';
