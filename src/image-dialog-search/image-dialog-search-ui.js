@@ -5,7 +5,7 @@ import lastSearchSnapshot from './last-search-snapshot';
 import moment from 'moment';
 import ContentDialogSearchViewModel from 'content-dialog-search-base-viewmodel';
 import _ from 'lodash';
-import signalEmitter from 'signal-emitter';
+import signalEmitter from 'koco-signal-emitter';
 import i18n from 'i18next';
 
 

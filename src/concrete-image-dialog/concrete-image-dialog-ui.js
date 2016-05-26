@@ -8,8 +8,8 @@ import ko from 'knockout';
 import $ from 'jquery';
 import ImageDialogBaseViewModel from '../image-dialog-ui-base';
 import ContentDialogViewModel from 'content-dialog-base-viewmodel';
-import koMappingUtilities from 'mapping-utilities';
-import emitter from 'signal-emitter';
+import koMappingUtilities from 'koco-mapping-utilities';
+import emitter from 'koco-signal-emitter';
 import i18n from 'i18next';
 
 

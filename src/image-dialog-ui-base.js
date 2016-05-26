@@ -6,9 +6,9 @@ import ContentDialogViewModel from 'content-dialog-base-viewmodel';
 import toastr from 'toastr';
 import _ from 'lodash';
 import router from 'router';
-import koMappingUtilities from 'mapping-utilities';
-import modaler from 'modaler';
-import signalEmitter from 'signal-emitter';
+import koMappingUtilities from 'koco-mapping-utilities';
+import modaler from 'koco-modaler';
+import signalEmitter from 'koco-signal-emitter';
 
 
 var defaultParams = {
