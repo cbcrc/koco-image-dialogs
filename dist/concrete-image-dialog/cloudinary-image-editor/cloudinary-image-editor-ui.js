@@ -1,67 +1,69 @@
-import ko from 'knockout';
-import _ from 'lodash';
-import imageUtilities from from 'koco-image-utilities';
-import koMappingUtilities from 'koco-mapping-utilities';
-import KoDisposer from 'koco-disposer';
+'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
+var _knockout = require('knockout');
+
+var _knockout2 = _interopRequireDefault(_knockout);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _kocoImageUtilities = require('koco-image-utilities');
+
+var _kocoImageUtilities2 = _interopRequireDefault(_kocoImageUtilities);
+
+var _kocoMappingUtilities = require('koco-mapping-utilities');
+
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
+
+var _kocoDisposer = require('koco-disposer');
+
+var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CloudinaryImagePicker = function CloudinaryImagePicker(params /*, componentInfo*/) {
     var self = this;
 
     self.defaultWidthTransformation = 300;
 
-    self.koDisposer = new KoDisposer();
+    self.koDisposer = new _kocoDisposer2.default();
 
     //TODO: Load from server (API)
     self.dimensionConfigsForKnownRatios = [{
         ratio: '4:3',
-        dimensions: [
-            '80x60',
-            '100x75',
-            '180x135',
-            '300x225'
-        ],
+        dimensions: ['80x60', '100x75', '180x135', '300x225'],
         defaultWidthTransformation: 300
     }, {
         ratio: '16:9',
-        dimensions: [
-            '64x36',
-            '98x55',
-            '112x63',
-            '135x76',
-            '160x90',
-            '205x115',
-            '240x135',
-            '300x169',
-            '310x174',
-            '352x198',
-            '420x236',
-            '480x270',
-            '635x357'
-        ],
+        dimensions: ['64x36', '98x55', '112x63', '135x76', '160x90', '205x115', '240x135', '300x169', '310x174', '352x198', '420x236', '480x270', '635x357'],
         defaultWidthTransformation: 635
     }];
 
     self.observableSelectedImage = params.selectedImage;
 
-    self.selectedImage = koMappingUtilities.toJS(params.selectedImage);
-    self.selectedConcreteImage = koMappingUtilities.toJS(params.selectedConcreteImage);
+    self.selectedImage = _kocoMappingUtilities2.default.toJS(params.selectedImage);
+    self.selectedConcreteImage = _kocoMappingUtilities2.default.toJS(params.selectedConcreteImage);
 
     var ratios = getRatios(self.selectedImage);
 
-    self.ratios = ko.observableArray(ratios);
+    self.ratios = _knockout2.default.observableArray(ratios);
 
     var ratioId;
     var widthTransformation = null;
 
     if (self.selectedConcreteImage) {
         ratioId = self.selectedConcreteImage.dimensionRatio;
-        widthTransformation = imageUtilities.getWidthTransformationFromCloudinaryUrl(self.selectedConcreteImage.mediaLink.href);
+        widthTransformation = _kocoImageUtilities2.default.getWidthTransformationFromCloudinaryUrl(self.selectedConcreteImage.mediaLink.href);
     } else {
         ratioId = ratios[0].id;
     }
 
-    self.ratio = ko.observable(ratioId);
+    self.ratio = _knockout2.default.observable(ratioId);
 
     var dimensionConfigs = getDimensionConfigsForCurrentRatio(ratioId, self.dimensionConfigsForKnownRatios);
 
@@ -69,14 +71,14 @@ var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
 
     params.selectedConcreteImage(self.selectedConcreteImage);
 
-    self.widthObservable = function(initialValue) {
-        var _actual = ko.observable(initialValue);
+    self.widthObservable = function (initialValue) {
+        var _actual = _knockout2.default.observable(initialValue);
 
-        var result = ko.pureComputed({
-            read: function() {
+        var result = _knockout2.default.pureComputed({
+            read: function read() {
                 return _actual();
             },
-            write: function(newValue) {
+            write: function write(newValue) {
                 var parsed = parseFloat(newValue);
                 var previous = _actual();
 
@@ -85,14 +87,14 @@ var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
                     _actual.notifySubscribers(previous);
                     //self.width.valueHasMutated();
                 } else {
-                    _actual(parsed);
-                }
+                        _actual(parsed);
+                    }
             }
         }).extend({
             notify: 'always'
         });
 
-        result.valueHasMutated = function() {
+        result.valueHasMutated = function () {
             _actual.valueHasMutated();
         };
 
@@ -102,21 +104,18 @@ var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
     };
 
     self.width = self.widthObservable(self.selectedConcreteImage.width);
-    self.height = ko.observable(self.selectedConcreteImage.height);
+    self.height = _knockout2.default.observable(self.selectedConcreteImage.height);
 
-
-    self.dimensions = ko.observableArray();
-    self.dimension = ko.observable();
+    self.dimensions = _knockout2.default.observableArray();
+    self.dimension = _knockout2.default.observable();
 
     var ratioHasChanged = true;
     var ignoreRatioModification = false;
     var ignoreDimensionModification = false;
 
-
     updateDimensionsInfo(self, dimensionConfigs);
 
-
-    self.koDisposer.add(self.dimension.subscribe(function() {
+    self.koDisposer.add(self.dimension.subscribe(function () {
         if (ignoreDimensionModification) {
             ignoreDimensionModification = false;
         } else {
@@ -130,7 +129,7 @@ var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
         }
     }));
 
-    self.koDisposer.add(self.width.subscribe(function() {
+    self.koDisposer.add(self.width.subscribe(function () {
         var width = self.width();
         ratioId = self.ratio();
 
@@ -142,15 +141,15 @@ var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
         params.selectedConcreteImage(self.selectedConcreteImage);
     }));
 
-    self.koDisposer.add(params.$raw.selectedImage.subscribe(function() {
-        self.selectedImage = koMappingUtilities.toJS(params.selectedImage);
+    self.koDisposer.add(params.$raw.selectedImage.subscribe(function () {
+        self.selectedImage = _kocoMappingUtilities2.default.toJS(params.selectedImage);
         var currentRatio = self.ratio();
 
         ratios = getRatios(self.selectedImage);
 
-        if (_.any(ratios, function(rat) {
-                return rat.id == currentRatio;
-            })) {
+        if (_lodash2.default.any(ratios, function (rat) {
+            return rat.id == currentRatio;
+        })) {
             ratioHasChanged = false;
             self.ratios(ratios);
             self.ratio.valueHasMutated();
@@ -161,7 +160,7 @@ var CloudinaryImagePicker = function(params /*, componentInfo*/ ) {
         }
     }));
 
-    self.koDisposer.add(self.ratio.subscribe(function() {
+    self.koDisposer.add(self.ratio.subscribe(function () {
         if (ignoreRatioModification) {
             ignoreRatioModification = false;
         } else {
@@ -202,7 +201,7 @@ function updateDimensionsInfo(self, dimensionConfigs) {
 }
 
 function getTransformedConcreteImage(self, args, dimensionConfigs, widthTransformation) {
-    self.sourceConcreteImg = imageUtilities.getConcreteImage(self.selectedImage, {
+    self.sourceConcreteImg = _kocoImageUtilities2.default.getConcreteImage(self.selectedImage, {
         preferedRatio: dimensionConfigs.ratio,
         defaultToClosestDimension: false
     });
@@ -211,7 +210,7 @@ function getTransformedConcreteImage(self, args, dimensionConfigs, widthTransfor
         widthTransformation = dimensionConfigs.defaultWidthTransformation || self.defaultWidthTransformation;
     }
 
-    var href = imageUtilities.updateCloudinaryUrlWidthTransformation(self.sourceConcreteImg.mediaLink.href, widthTransformation);
+    var href = _kocoImageUtilities2.default.updateCloudinaryUrlWidthTransformation(self.sourceConcreteImg.mediaLink.href, widthTransformation);
 
     var height = getHeightFromWidthAndRatio(widthTransformation, dimensionConfigs.ratio);
 
@@ -229,7 +228,7 @@ function getDimensionIdFromWidthAndHeight(dimensions, width, height) {
     if (dimensions.length) {
         var dimId = width + 'x' + height;
 
-        var dimension = _.find(dimensions, function(dim) {
+        var dimension = _lodash2.default.find(dimensions, function (dim) {
             return dim.id == dimId;
         });
 
@@ -261,10 +260,9 @@ function getRatios(conceptualImage) {
 }
 
 function getDimensionConfigsForCurrentRatio(ratio, dimensionConfigsForKnownRatios) {
-    var dimensionConfigsForCurrentRatio = _.find(dimensionConfigsForKnownRatios,
-        function(dimensionConfigsForKnownRatio) {
-            return dimensionConfigsForKnownRatio.ratio == ratio;
-        });
+    var dimensionConfigsForCurrentRatio = _lodash2.default.find(dimensionConfigsForKnownRatios, function (dimensionConfigsForKnownRatio) {
+        return dimensionConfigsForKnownRatio.ratio == ratio;
+    });
 
     var dimensions = [];
     var defaultWidthTransformation = '';
@@ -275,7 +273,7 @@ function getDimensionConfigsForCurrentRatio(ratio, dimensionConfigsForKnownRatio
     }
 
     var result = {
-        dimensions: _.map(dimensions, function(dimension) {
+        dimensions: _lodash2.default.map(dimensions, function (dimension) {
             return {
                 id: dimension,
                 name: dimension
@@ -319,15 +317,15 @@ function getDimensionFromString(string, separator) {
     return null;
 }
 
-CloudinaryImagePicker.prototype.dispose = function() {
+CloudinaryImagePicker.prototype.dispose = function () {
     var self = this;
 
     self.koDisposer.dispose();
 };
 
-export default {
+exports.default = {
     viewModel: {
-        createViewModel: function(params, componentInfo) {
+        createViewModel: function createViewModel(params, componentInfo) {
             return new CloudinaryImagePicker(params, componentInfo);
         }
     },

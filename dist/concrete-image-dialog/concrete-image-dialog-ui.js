@@ -1,18 +1,43 @@
-//Ce dialog est destiné à fonctionner avec tiny-mce
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _knockout = require('knockout');
+
+var _knockout2 = _interopRequireDefault(_knockout);
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _imageDialogUiBase = require('../image-dialog-ui-base');
+
+var _imageDialogUiBase2 = _interopRequireDefault(_imageDialogUiBase);
+
+var _contentDialogBaseViewmodel = require('content-dialog-base-viewmodel');
+
+var _contentDialogBaseViewmodel2 = _interopRequireDefault(_contentDialogBaseViewmodel);
+
+var _kocoMappingUtilities = require('koco-mapping-utilities');
+
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
+
+var _kocoSignalEmitter = require('koco-signal-emitter');
+
+var _kocoSignalEmitter2 = _interopRequireDefault(_kocoSignalEmitter);
+
+var _i18next = require('i18next');
+
+var _i18next2 = _interopRequireDefault(_i18next);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var defaultContentTypeId = '20'; //Ce dialog est destiné à fonctionner avec tiny-mce
 //il ne recoit pas en input un conceptual-image, ni un concrete-image
 //il recoit l'url de l'image et fait un appel à l'api pour obtenir l'information nécessaire
 //en ce sens, il devrait peut-être être renommé (on pourrait éventullement avoir un vrai concrete-image-dialog)
-
-import ko from 'knockout';
-import $ from 'jquery';
-import ImageDialogBaseViewModel from '../image-dialog-ui-base';
-import ContentDialogViewModel from 'content-dialog-base-viewmodel';
-import koMappingUtilities from 'koco-mapping-utilities';
-import emitter from 'koco-signal-emitter';
-import i18n from 'i18next';
-
-
-var defaultContentTypeId = '20';
 
 var defaultItem = {
     id: null,
@@ -26,20 +51,20 @@ var defaultItem = {
     contentTypeId: defaultContentTypeId
 };
 
-var ConcreteImageDialogViewModel = function(settings /*, componentInfo*/ ) {
+var ConcreteImageDialogViewModel = function ConcreteImageDialogViewModel(settings /*, componentInfo*/) {
     var self = this;
 
     self.params = self.getParams(settings);
     self.api = self.params.api;
-    self.i18n = i18n;
+    self.i18n = _i18next2.default;
 
     var contentDialogViewModelParams = {
         dialogTitle: 'Images',
-        originalItem: ko.observable(),
+        originalItem: _knockout2.default.observable(),
         defaultItem: defaultItem,
         close: settings.close,
         isSearchable: true,
-        api: self.api,
+        api: self.api
     };
 
     self.translated = {
@@ -53,11 +78,11 @@ var ConcreteImageDialogViewModel = function(settings /*, componentInfo*/ ) {
         leftLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-left'),
         centreLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-center'),
         rightLabel: self.i18n.t('koco-image-dialogs.concrete-dialog-edit-label-right')
-    }
+    };
 
-    ContentDialogViewModel.call(self, contentDialogViewModelParams);
+    _contentDialogBaseViewmodel2.default.call(self, contentDialogViewModelParams);
 
-    self.canDeleteImage = ko.pureComputed(self.canDeleteImage.bind(self));
+    self.canDeleteImage = _knockout2.default.pureComputed(self.canDeleteImage.bind(self));
     self.koDisposer.add(self.canDeleteImage);
 
     var align = 'left';
@@ -66,30 +91,30 @@ var ConcreteImageDialogViewModel = function(settings /*, componentInfo*/ ) {
         align = self.params.align;
     }
 
-    self.align = ko.observable(align);
-    self.imageForLineups = ko.observable(false);
-    self.selectedConcreteImage = ko.observable();
+    self.align = _knockout2.default.observable(align);
+    self.imageForLineups = _knockout2.default.observable(false);
+    self.selectedConcreteImage = _knockout2.default.observable();
 
-    self.isCloudinary = ko.pureComputed(self.getIsCloudinary.bind(self));
+    self.isCloudinary = _knockout2.default.pureComputed(self.getIsCloudinary.bind(self));
     self.koDisposer.add(self.isCloudinary);
 
     self.activate();
 };
 
-ConcreteImageDialogViewModel.prototype = Object.create(ImageDialogBaseViewModel.prototype);
+ConcreteImageDialogViewModel.prototype = Object.create(_imageDialogUiBase2.default.prototype);
 ConcreteImageDialogViewModel.prototype.constructor = ConcreteImageDialogViewModel;
 
-ConcreteImageDialogViewModel.prototype.start = function() {
+ConcreteImageDialogViewModel.prototype.start = function () {
     var self = this;
 
-    var concreteImageUrl = ko.unwrap(self.params.concreteImageUrl);
+    var concreteImageUrl = _knockout2.default.unwrap(self.params.concreteImageUrl);
 
     if (concreteImageUrl) {
         return self.api.getJson('images/selected', {
-            data: $.param({
+            data: _jquery2.default.param({
                 url: concreteImageUrl
             }, true),
-            success: function(conceptualImageWithSelectedImage) {
+            success: function success(conceptualImageWithSelectedImage) {
                 if (conceptualImageWithSelectedImage && conceptualImageWithSelectedImage.conceptualImage) {
                     var originalItem = conceptualImageWithSelectedImage.conceptualImage;
 
@@ -122,27 +147,27 @@ ConcreteImageDialogViewModel.prototype.start = function() {
     }
 };
 
-ConcreteImageDialogViewModel.prototype.selectItem = function(inputModel) {
+ConcreteImageDialogViewModel.prototype.selectItem = function (inputModel) {
     var self = this;
 
     self.selectedConcreteImage(null);
-    ImageDialogBaseViewModel.prototype.selectItem.call(self, inputModel);
+    _imageDialogUiBase2.default.prototype.selectItem.call(self, inputModel);
 };
 
-ConcreteImageDialogViewModel.prototype.getSearchOnDisplay = function() {
+ConcreteImageDialogViewModel.prototype.getSearchOnDisplay = function () {
     var self = this;
 
-    return !ko.unwrap(self.params.concreteImageUrl);
+    return !_knockout2.default.unwrap(self.params.concreteImageUrl);
 };
 
-ConcreteImageDialogViewModel.prototype.toOutputModel = function() {
+ConcreteImageDialogViewModel.prototype.toOutputModel = function () {
     var self = this;
 
-    var conceptualImage = ContentDialogViewModel.prototype.toOutputModel.call(self);
-    var concreteImage = koMappingUtilities.toJS(self.selectedConcreteImage);
+    var conceptualImage = _contentDialogBaseViewmodel2.default.prototype.toOutputModel.call(self);
+    var concreteImage = _kocoMappingUtilities2.default.toJS(self.selectedConcreteImage);
 
     if (self.imageForLineups()) {
-        emitter.dispatch('image:imageForLineups', [conceptualImage]);
+        _kocoSignalEmitter2.default.dispatch('image:imageForLineups', [conceptualImage]);
     }
 
     return {
@@ -152,19 +177,19 @@ ConcreteImageDialogViewModel.prototype.toOutputModel = function() {
     };
 };
 
-ConcreteImageDialogViewModel.prototype.validate = function() {
+ConcreteImageDialogViewModel.prototype.validate = function () {
     var self = this;
 
     if (!self.selectedConcreteImage()) {
         return self.i18n.t('koco-image-dialogs.concrete-image-dialog-select-image-format');
     }
 
-    ContentDialogViewModel.prototype.validate.call(self);
+    _contentDialogBaseViewmodel2.default.prototype.validate.call(self);
 };
 
-export default {
+exports.default = {
     viewModel: {
-        createViewModel: function(params, componentInfo) {
+        createViewModel: function createViewModel(params, componentInfo) {
             return new ConcreteImageDialogViewModel(params, componentInfo);
         }
     },

@@ -1,6 +1,6 @@
 import ko from 'knockout';
 import _ from 'lodash';
-import imageUtilities from from 'koco-image-utilities';
+import imageUtilities from 'koco-image-utilities';
 import koMappingUtilities from 'koco-mapping-utilities';
 import KoDisposer from 'koco-disposer';
 
