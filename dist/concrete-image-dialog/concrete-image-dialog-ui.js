@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _concreteImageDialog = require('text!./concrete-image-dialog.html');
-
-var _concreteImageDialog2 = _interopRequireDefault(_concreteImageDialog);
-
 var _knockout = require('knockout');
 
 var _knockout2 = _interopRequireDefault(_knockout);
@@ -24,13 +20,13 @@ var _contentDialogBaseViewmodel = require('content-dialog-base-viewmodel');
 
 var _contentDialogBaseViewmodel2 = _interopRequireDefault(_contentDialogBaseViewmodel);
 
-var _mappingUtilities = require('mapping-utilities');
+var _kocoMappingUtilities = require('koco-mapping-utilities');
 
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
 
-var _signalEmitter = require('signal-emitter');
+var _kocoSignalEmitter = require('koco-signal-emitter');
 
-var _signalEmitter2 = _interopRequireDefault(_signalEmitter);
+var _kocoSignalEmitter2 = _interopRequireDefault(_kocoSignalEmitter);
 
 var _i18next = require('i18next');
 
@@ -38,12 +34,10 @@ var _i18next2 = _interopRequireDefault(_i18next);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//Ce dialog est destiné à fonctionner avec tiny-mce
+var defaultContentTypeId = '20'; //Ce dialog est destiné à fonctionner avec tiny-mce
 //il ne recoit pas en input un conceptual-image, ni un concrete-image
 //il recoit l'url de l'image et fait un appel à l'api pour obtenir l'information nécessaire
 //en ce sens, il devrait peut-être être renommé (on pourrait éventullement avoir un vrai concrete-image-dialog)
-
-var defaultContentTypeId = '20';
 
 var defaultItem = {
     id: null,
@@ -170,10 +164,10 @@ ConcreteImageDialogViewModel.prototype.toOutputModel = function () {
     var self = this;
 
     var conceptualImage = _contentDialogBaseViewmodel2.default.prototype.toOutputModel.call(self);
-    var concreteImage = _mappingUtilities2.default.toJS(self.selectedConcreteImage);
+    var concreteImage = _kocoMappingUtilities2.default.toJS(self.selectedConcreteImage);
 
     if (self.imageForLineups()) {
-        _signalEmitter2.default.dispatch('image:imageForLineups', [conceptualImage]);
+        _kocoSignalEmitter2.default.dispatch('image:imageForLineups', [conceptualImage]);
     }
 
     return {
@@ -199,5 +193,5 @@ exports.default = {
             return new ConcreteImageDialogViewModel(params, componentInfo);
         }
     },
-    template: _concreteImageDialog2.default
+    template: template
 };

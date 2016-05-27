@@ -24,21 +24,21 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _router = require('router');
+var _koco = require('koco');
 
-var _router2 = _interopRequireDefault(_router);
+var _koco2 = _interopRequireDefault(_koco);
 
-var _mappingUtilities = require('mapping-utilities');
+var _kocoMappingUtilities = require('koco-mapping-utilities');
 
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
 
-var _modaler = require('modaler');
+var _kocoModaler = require('koco-modaler');
 
-var _modaler2 = _interopRequireDefault(_modaler);
+var _kocoModaler2 = _interopRequireDefault(_kocoModaler);
 
-var _signalEmitter = require('signal-emitter');
+var _kocoSignalEmitter = require('koco-signal-emitter');
 
-var _signalEmitter2 = _interopRequireDefault(_signalEmitter);
+var _kocoSignalEmitter2 = _interopRequireDefault(_kocoSignalEmitter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55,7 +55,7 @@ ImageDialogBaseViewModel.prototype.constructor = ImageDialogBaseViewModel;
 ImageDialogBaseViewModel.prototype.getHasSelectedItem = function () {
     var self = this;
 
-    var selectedItem = _mappingUtilities2.default.toJS(self.selectedItem);
+    var selectedItem = _kocoMappingUtilities2.default.toJS(self.selectedItem);
 
     return selectedItem && selectedItem.idAsUrl;
 };
@@ -63,7 +63,7 @@ ImageDialogBaseViewModel.prototype.getHasSelectedItem = function () {
 ImageDialogBaseViewModel.prototype.getIsCloudinary = function () {
     var self = this;
 
-    var selectedItem = _mappingUtilities2.default.toJS(self.selectedItem);
+    var selectedItem = _kocoMappingUtilities2.default.toJS(self.selectedItem);
 
     if (selectedItem && selectedItem.contentType && selectedItem.contentType.id === 19) {
         return true;
@@ -77,7 +77,7 @@ ImageDialogBaseViewModel.prototype.getParams = function (settings) {
 
     var params = _jquery2.default.extend({}, defaultParams, settings.params.settings);
 
-    if (_router2.default.context().route.url.indexOf('mu-contents') > -1) {
+    if (_koco2.default.router.context().route.url.indexOf('mu-contents') > -1) {
         params.contentTypeIds = [19, 20];
     }
 
@@ -87,7 +87,7 @@ ImageDialogBaseViewModel.prototype.getParams = function (settings) {
 ImageDialogBaseViewModel.prototype.canDeleteImage = function () {
     var self = this;
 
-    var resource = _mappingUtilities2.default.toJS(self.selectedItem);
+    var resource = _kocoMappingUtilities2.default.toJS(self.selectedItem);
 
     if (resource && resource.contentType && resource.contentType.id === 20 && resource.idAsUrl) {
         return true;
@@ -99,7 +99,7 @@ ImageDialogBaseViewModel.prototype.canDeleteImage = function () {
 ImageDialogBaseViewModel.prototype.isSame = function (item) {
     var self = this;
 
-    var selectedItem = _mappingUtilities2.default.toJS(self.selectedItem);
+    var selectedItem = _kocoMappingUtilities2.default.toJS(self.selectedItem);
 
     return selectedItem && item && selectedItem.idAsUrl === item.idAsUrl;
 };
@@ -113,7 +113,7 @@ ImageDialogBaseViewModel.prototype.deleteImage = function () {
         return false;
     }
 
-    _modaler2.default.show('confirm', {
+    _kocoModaler2.default.show('confirm', {
         message: 'Attention, vous vous apprêtez à supprimer cette image de la banque d\'images (GHT1T). Voulez-vous réellement supprimer cette image?'
     }).then(function (confirm) {
         if (confirm) {
@@ -124,7 +124,7 @@ ImageDialogBaseViewModel.prototype.deleteImage = function () {
             self.api.delete(_lodash2.default.template('images?url=<%= id %>')({
                 id: idAsUrl
             })).done(function () {
-                _signalEmitter2.default.dispatch('image:removed', [idAsUrl]);
+                _kocoSignalEmitter2.default.dispatch('image:removed', [idAsUrl]);
                 self.selectedItem(null);
                 _toastr2.default.info('L\'image a été supprimée.');
             }).fail(function (jqXHR, textStatus, errorThrown) {

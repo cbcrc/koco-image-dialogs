@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _concreteImageEditor = require('text!./concrete-image-editor.html');
-
-var _concreteImageEditor2 = _interopRequireDefault(_concreteImageEditor);
-
 var _knockout = require('knockout');
 
 var _knockout2 = _interopRequireDefault(_knockout);
@@ -20,17 +16,17 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _imageUtilities = require('image-utilities');
+var _kocoImageUtilities = require('koco-image-utilities');
 
-var _imageUtilities2 = _interopRequireDefault(_imageUtilities);
+var _kocoImageUtilities2 = _interopRequireDefault(_kocoImageUtilities);
 
-var _mappingUtilities = require('mapping-utilities');
+var _kocoMappingUtilities = require('koco-mapping-utilities');
 
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
 
-var _disposer = require('disposer');
+var _kocoDisposer = require('koco-disposer');
 
-var _disposer2 = _interopRequireDefault(_disposer);
+var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -48,8 +44,8 @@ var ConcreteImagesPickerViewModel = function ConcreteImagesPickerViewModel(param
 
     self.params = params;
 
-    var selectedImage = _mappingUtilities2.default.toJS(self.params.selectedImage);
-    var selectedConcreteImage = _mappingUtilities2.default.toJS(self.params.selectedConcreteImage);
+    var selectedImage = _kocoMappingUtilities2.default.toJS(self.params.selectedImage);
+    var selectedConcreteImage = _kocoMappingUtilities2.default.toJS(self.params.selectedConcreteImage);
 
     var options = buildOptions(selectedImage);
 
@@ -58,7 +54,7 @@ var ConcreteImagesPickerViewModel = function ConcreteImagesPickerViewModel(param
     if (!selectedConcreteImage) {
         //Attention: 2 type de DefaultConcreteImage (1 pour les previews de scoop et celui ci pour le default concrete image...)
         //en ce moment on est chanceux, c'est la meme taille qui est utilisée par défaut mais il faudra ajuster si ca change
-        selectedConcreteImage = _imageUtilities2.default.getDefaultConcreteImage(selectedImage);
+        selectedConcreteImage = _kocoImageUtilities2.default.getDefaultConcreteImage(selectedImage);
     }
 
     var selectedOption = getConcreteImageHref(selectedConcreteImage);
@@ -67,7 +63,7 @@ var ConcreteImagesPickerViewModel = function ConcreteImagesPickerViewModel(param
 
     self.params.selectedConcreteImage(selectedConcreteImage);
 
-    self.koDisposer = new _disposer2.default();
+    self.koDisposer = new _kocoDisposer2.default();
 
     self.koDisposer.add(self.selectedOption.subscribe(function (newValue) {
         selectedOption = newValue;
@@ -83,10 +79,10 @@ var ConcreteImagesPickerViewModel = function ConcreteImagesPickerViewModel(param
     }));
 
     self.koDisposer.add(self.params.$raw.selectedImage.subscribe(function () {
-        selectedImage = _mappingUtilities2.default.toJS(self.params.selectedImage);
+        selectedImage = _kocoMappingUtilities2.default.toJS(self.params.selectedImage);
         options = buildOptions(selectedImage);
         self.options(options);
-        selectedConcreteImage = _imageUtilities2.default.getDefaultConcreteImage(selectedImage);
+        selectedConcreteImage = _kocoImageUtilities2.default.getDefaultConcreteImage(selectedImage);
         selectedOption = getConcreteImageHref(selectedConcreteImage);
         self.selectedOption(selectedOption);
         self.params.selectedConcreteImage(selectedConcreteImage);
@@ -159,5 +155,5 @@ exports.default = {
             return new ConcreteImagesPickerViewModel(params, componentInfo);
         }
     },
-    template: _concreteImageEditor2.default
+    template: template
 };

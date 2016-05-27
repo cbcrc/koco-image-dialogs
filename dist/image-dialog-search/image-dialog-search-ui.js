@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _imageDialogSearch = require('text!./image-dialog-search.html');
-
-var _imageDialogSearch2 = _interopRequireDefault(_imageDialogSearch);
-
 var _knockout = require('knockout');
 
 var _knockout2 = _interopRequireDefault(_knockout);
@@ -32,9 +28,9 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _signalEmitter = require('signal-emitter');
+var _kocoSignalEmitter = require('koco-signal-emitter');
 
-var _signalEmitter2 = _interopRequireDefault(_signalEmitter);
+var _kocoSignalEmitter2 = _interopRequireDefault(_kocoSignalEmitter);
 
 var _i18next = require('i18next');
 
@@ -137,7 +133,7 @@ var ImageDialogSearchViewModel = function ImageDialogSearchViewModel(params /*, 
         });
     };
 
-    _signalEmitter2.default.addListener('image:removed', self.onImageRemoved);
+    _kocoSignalEmitter2.default.addListener('image:removed', self.onImageRemoved);
 
     self.activate();
 };
@@ -242,7 +238,7 @@ ImageDialogSearchViewModel.prototype.dispose = function () {
 
     _contentDialogSearchBaseViewmodel2.default.prototype.dispose.call(self);
 
-    _signalEmitter2.default.removeListener('image:removed', self.onImageRemoved);
+    _kocoSignalEmitter2.default.removeListener('image:removed', self.onImageRemoved);
 };
 
 exports.default = {
@@ -251,5 +247,5 @@ exports.default = {
             return new ImageDialogSearchViewModel(params, componentInfo);
         }
     },
-    template: _imageDialogSearch2.default
+    template: template
 };

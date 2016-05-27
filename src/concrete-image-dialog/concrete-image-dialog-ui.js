@@ -3,13 +3,12 @@
 //il recoit l'url de l'image et fait un appel à l'api pour obtenir l'information nécessaire
 //en ce sens, il devrait peut-être être renommé (on pourrait éventullement avoir un vrai concrete-image-dialog)
 
-import template from 'text!./concrete-image-dialog.html';
 import ko from 'knockout';
 import $ from 'jquery';
 import ImageDialogBaseViewModel from '../image-dialog-ui-base';
 import ContentDialogViewModel from 'content-dialog-base-viewmodel';
-import koMappingUtilities from 'mapping-utilities';
-import emitter from 'signal-emitter';
+import koMappingUtilities from 'koco-mapping-utilities';
+import emitter from 'koco-signal-emitter';
 import i18n from 'i18next';
 
 

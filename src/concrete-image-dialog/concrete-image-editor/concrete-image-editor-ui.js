@@ -1,10 +1,9 @@
-import template from 'text!./concrete-image-editor.html';
 import ko from 'knockout';
 import $ from 'jquery';
 import _ from 'lodash';
-import imageUtilities from 'image-utilities';
-import koMappingUtilities from 'mapping-utilities';
-import KoDisposer from 'disposer';
+import imageUtilities from 'koco-image-utilities';
+import koMappingUtilities from 'koco-mapping-utilities';
+import KoDisposer from 'koco-disposer';
 
 
 /*

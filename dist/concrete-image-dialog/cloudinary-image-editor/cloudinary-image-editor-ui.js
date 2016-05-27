@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _cloudinaryImageEditor = require('text!./cloudinary-image-editor.html');
-
-var _cloudinaryImageEditor2 = _interopRequireDefault(_cloudinaryImageEditor);
-
 var _knockout = require('knockout');
 
 var _knockout2 = _interopRequireDefault(_knockout);
@@ -16,17 +12,17 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _imageUtilities = require('image-utilities');
+var _kocoImageUtilities = require('koco-image-utilities');
 
-var _imageUtilities2 = _interopRequireDefault(_imageUtilities);
+var _kocoImageUtilities2 = _interopRequireDefault(_kocoImageUtilities);
 
-var _mappingUtilities = require('mapping-utilities');
+var _kocoMappingUtilities = require('koco-mapping-utilities');
 
-var _mappingUtilities2 = _interopRequireDefault(_mappingUtilities);
+var _kocoMappingUtilities2 = _interopRequireDefault(_kocoMappingUtilities);
 
-var _disposer = require('disposer');
+var _kocoDisposer = require('koco-disposer');
 
-var _disposer2 = _interopRequireDefault(_disposer);
+var _kocoDisposer2 = _interopRequireDefault(_kocoDisposer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35,7 +31,7 @@ var CloudinaryImagePicker = function CloudinaryImagePicker(params /*, componentI
 
     self.defaultWidthTransformation = 300;
 
-    self.koDisposer = new _disposer2.default();
+    self.koDisposer = new _kocoDisposer2.default();
 
     //TODO: Load from server (API)
     self.dimensionConfigsForKnownRatios = [{
@@ -50,8 +46,8 @@ var CloudinaryImagePicker = function CloudinaryImagePicker(params /*, componentI
 
     self.observableSelectedImage = params.selectedImage;
 
-    self.selectedImage = _mappingUtilities2.default.toJS(params.selectedImage);
-    self.selectedConcreteImage = _mappingUtilities2.default.toJS(params.selectedConcreteImage);
+    self.selectedImage = _kocoMappingUtilities2.default.toJS(params.selectedImage);
+    self.selectedConcreteImage = _kocoMappingUtilities2.default.toJS(params.selectedConcreteImage);
 
     var ratios = getRatios(self.selectedImage);
 
@@ -62,7 +58,7 @@ var CloudinaryImagePicker = function CloudinaryImagePicker(params /*, componentI
 
     if (self.selectedConcreteImage) {
         ratioId = self.selectedConcreteImage.dimensionRatio;
-        widthTransformation = _imageUtilities2.default.getWidthTransformationFromCloudinaryUrl(self.selectedConcreteImage.mediaLink.href);
+        widthTransformation = _kocoImageUtilities2.default.getWidthTransformationFromCloudinaryUrl(self.selectedConcreteImage.mediaLink.href);
     } else {
         ratioId = ratios[0].id;
     }
@@ -146,7 +142,7 @@ var CloudinaryImagePicker = function CloudinaryImagePicker(params /*, componentI
     }));
 
     self.koDisposer.add(params.$raw.selectedImage.subscribe(function () {
-        self.selectedImage = _mappingUtilities2.default.toJS(params.selectedImage);
+        self.selectedImage = _kocoMappingUtilities2.default.toJS(params.selectedImage);
         var currentRatio = self.ratio();
 
         ratios = getRatios(self.selectedImage);
@@ -205,7 +201,7 @@ function updateDimensionsInfo(self, dimensionConfigs) {
 }
 
 function getTransformedConcreteImage(self, args, dimensionConfigs, widthTransformation) {
-    self.sourceConcreteImg = _imageUtilities2.default.getConcreteImage(self.selectedImage, {
+    self.sourceConcreteImg = _kocoImageUtilities2.default.getConcreteImage(self.selectedImage, {
         preferedRatio: dimensionConfigs.ratio,
         defaultToClosestDimension: false
     });
@@ -214,7 +210,7 @@ function getTransformedConcreteImage(self, args, dimensionConfigs, widthTransfor
         widthTransformation = dimensionConfigs.defaultWidthTransformation || self.defaultWidthTransformation;
     }
 
-    var href = _imageUtilities2.default.updateCloudinaryUrlWidthTransformation(self.sourceConcreteImg.mediaLink.href, widthTransformation);
+    var href = _kocoImageUtilities2.default.updateCloudinaryUrlWidthTransformation(self.sourceConcreteImg.mediaLink.href, widthTransformation);
 
     var height = getHeightFromWidthAndRatio(widthTransformation, dimensionConfigs.ratio);
 
@@ -333,5 +329,5 @@ exports.default = {
             return new CloudinaryImagePicker(params, componentInfo);
         }
     },
-    template: _cloudinaryImageEditor2.default
+    template: template
 };
