@@ -18,7 +18,6 @@
     "i18next": "^3.1.0",
     "jquery": "^2.1.4",
     "knockout": "^3.4.0",
-    "koco": "^1.0.0",
     "koco-array-utilities": "^1.1.0",
     "koco-content-dialog-utilities": "^1.1.0",
     "koco-mapping-utilities": "^1.1.0",
@@ -32,5 +31,8 @@
     "babel-cli": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0"
+  },
+  "peerDependencies": {
+    "koco": "^1.0.0"
   }
 }

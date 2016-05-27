@@ -5,7 +5,7 @@ import $ from 'jquery';
 import ContentDialogViewModel from 'content-dialog-base-viewmodel';
 import toastr from 'toastr';
 import _ from 'lodash';
-import router from 'router';
+import koco from 'koco';
 import koMappingUtilities from 'koco-mapping-utilities';
 import modaler from 'koco-modaler';
 import signalEmitter from 'koco-signal-emitter';
@@ -46,7 +46,7 @@ ImageDialogBaseViewModel.prototype.getParams = function(settings) {
 
     var params = $.extend({}, defaultParams, settings.params.settings);
 
-    if (router.context().route.url.indexOf('mu-contents') > -1) {
+    if (koco.router.context().route.url.indexOf('mu-contents') > -1) {
         params.contentTypeIds = [19, 20];
     }
 

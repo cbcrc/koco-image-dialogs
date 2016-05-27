@@ -24,9 +24,9 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _router = require('router');
+var _koco = require('koco');
 
-var _router2 = _interopRequireDefault(_router);
+var _koco2 = _interopRequireDefault(_koco);
 
 var _kocoMappingUtilities = require('koco-mapping-utilities');
 
@@ -77,7 +77,7 @@ ImageDialogBaseViewModel.prototype.getParams = function (settings) {
 
     var params = _jquery2.default.extend({}, defaultParams, settings.params.settings);
 
-    if (_router2.default.context().route.url.indexOf('mu-contents') > -1) {
+    if (_koco2.default.router.context().route.url.indexOf('mu-contents') > -1) {
         params.contentTypeIds = [19, 20];
     }
 
