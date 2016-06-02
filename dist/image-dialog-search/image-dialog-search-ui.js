@@ -1,253 +1,221 @@
-(function (global, factory) {
-    if (typeof define === "function" && define.amd) {
-        define(['exports', 'knockout', 'jquery', './last-search-snapshot', 'moment', 'content-dialog-search-base-viewmodel', 'lodash', 'koco-signal-emitter', 'i18next'], factory);
-    } else if (typeof exports !== "undefined") {
-        factory(exports, require('knockout'), require('jquery'), require('./last-search-snapshot'), require('moment'), require('content-dialog-search-base-viewmodel'), require('lodash'), require('koco-signal-emitter'), require('i18next'));
-    } else {
-        var mod = {
-            exports: {}
-        };
-        factory(mod.exports, global.knockout, global.jquery, global.lastSearchSnapshot, global.moment, global.contentDialogSearchBaseViewmodel, global.lodash, global.kocoSignalEmitter, global.i18next);
-        global.imageDialogSearchUi = mod.exports;
-    }
-})(this, function (exports, _knockout, _jquery, _lastSearchSnapshot, _moment, _contentDialogSearchBaseViewmodel, _lodash, _kocoSignalEmitter, _i18next) {
-    'use strict';
+import ko from 'knockout';
+import $ from 'jquery';
+import lastSearchSnapshot from './last-search-snapshot';
+import moment from 'moment';
+import ContentDialogSearchViewModel from 'content-dialog-search-base-viewmodel';
+import _ from 'lodash';
+import signalEmitter from 'koco-signal-emitter';
+import i18n from 'i18next';
 
-    Object.defineProperty(exports, "__esModule", {
-        value: true
+
+var defaultSearchFields = {
+    startDate: null,
+    endDate: null,
+    keywords: '',
+    myImages: false,
+    codeZones: [],
+    contentTypeId: 19,
+    directoryCodeName: null,
+    subDirectoryCodeName: null
+};
+
+// default values here are based on what was available
+// during development of Tango, pass in values appropriate
+// to your usage in params.imageSourceConfig
+var defaultImageContentTypes = [{
+    name: 'Picto',
+    id: 19,
+    apiResourceName: 'images',
+    configurationApiResourceName: 'images/configuration'
+}, {
+    name: 'GHT1T',
+    id: 20,
+    apiResourceName: 'images/ght1t',
+    configurationApiResourceName: 'zones-for-images'
+}];
+
+var ImageDialogSearchViewModel = function(params /*, componentInfo*/ ) {
+    var self = this;
+
+    self.zones = ko.observableArray();
+    self.cloudinaryDirectories = ko.observableArray();
+    self.cloudinarySubDirectories = ko.observableArray();
+    self.settings = params || {};
+    self.api = self.settings.api;
+
+    // merge user-supplied config if present
+    self.allImageContentTypes = defaultImageContentTypes;
+    if (!_.isUndefined(params.imageSourceConfig)) {
+        if (_.has(params.imageSourceConfig, 'picto')) {
+            var pictoConfig = _.find(self.allImageContentTypes, {
+                id: 19
+            });
+            $.extend(pictoConfig, params.imageSourceConfig['picto']);
+        }
+        if (_.has(params.imageSourceConfig, 'ght1t')) {
+            var ght1tConfig = _.find(self.allImageContentTypes, {
+                id: 20
+            });
+            $.extend(ght1tConfig, params.imageSourceConfig['ght1t']);
+        }
+    }
+
+    self.translated = {
+        dateInterval: i18n.t('koco-image-dialogs.date-interval'),
+        defaultTitle: i18n.t('koco-image-dialogs.notitle'),
+        myImages: i18n.t('koco-image-dialogs.image-search-results-default-title'),
+        allDirectoriesPlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-all-directories'),
+        allSubDirectoriesPlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-all-subdirectories'),
+        keywordsPlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-keywords'),
+        zonePlaceholder: i18n.t('koco-image-dialogs.image-search-placeholder-zone')
+    };
+
+    self.apiResourceName = ko.pureComputed(function() {
+        var resourceName = _.find(self.allImageContentTypes, {
+            id: self.searchFields.contentTypeId()
+        }).apiResourceName;
+        return !_.isUndefined(resourceName) ? resourceName : '';
     });
 
-    var _knockout2 = _interopRequireDefault(_knockout);
+    self.contentTypes = _.filter(self.allImageContentTypes, function(contentType) {
+        return _.any(self.settings.contentTypeIds, function(contentTypeId) {
+            return contentType.id === contentTypeId;
+        });
+    });
 
-    var _jquery2 = _interopRequireDefault(_jquery);
+    var contentDialogSearchViewModelParams = {
+        defaultSearchFields: defaultSearchFields,
+        isSame: params.isSame,
+        selected: params.selected,
+        searchOnDisplay: params.searchOnDisplay,
+        api: self.api,
+        apiResourceName: self.apiResourceName,
+        lastSearchSnapshot: lastSearchSnapshot
+    };
 
-    var _lastSearchSnapshot2 = _interopRequireDefault(_lastSearchSnapshot);
+    ContentDialogSearchViewModel.call(self, contentDialogSearchViewModelParams);
 
-    var _moment2 = _interopRequireDefault(_moment);
+    self.koDisposer.add(self.apiResourceName);
 
-    var _contentDialogSearchBaseViewmodel2 = _interopRequireDefault(_contentDialogSearchBaseViewmodel);
+    self.onImageRemoved = function(idAsUrl) {
+        self.items.remove(function(item) {
+            return item.idAsUrl === idAsUrl;
+        });
+    };
 
-    var _lodash2 = _interopRequireDefault(_lodash);
+    signalEmitter.addListener('image:removed', self.onImageRemoved);
 
-    var _kocoSignalEmitter2 = _interopRequireDefault(_kocoSignalEmitter);
+    self.activate();
+};
 
-    var _i18next2 = _interopRequireDefault(_i18next);
+ImageDialogSearchViewModel.prototype = Object.create(ContentDialogSearchViewModel.prototype);
+ImageDialogSearchViewModel.prototype.constructor = ImageDialogSearchViewModel;
 
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
+ImageDialogSearchViewModel.prototype.getSearchArgumentsFromFields = function() {
+    var self = this;
+
+    //TODO: simplify this function
+
+    var searchArguments = {
+        zoneIds: self.searchFields.codeZones()
+    };
+
+    if (self.settings.dimensions) {
+        searchArguments.dimensions = encodeURIComponent(JSON.stringify(self.settings.dimensions));
     }
 
-    var defaultSearchFields = {
-        startDate: null,
-        endDate: null,
-        keywords: '',
-        myImages: false,
-        codeZones: [],
-        contentTypeId: 19,
-        directoryCodeName: null,
-        subDirectoryCodeName: null
-    };
+    if (self.searchFields.startDate()) {
+        searchArguments.startDate = self.searchFields.startDate();
+    }
 
-    // default values here are based on what was available
-    // during development of Tango, pass in values appropriate
-    // to your usage in params.imageSourceConfig
-    var defaultImageContentTypes = [{
-        name: 'Picto',
-        id: 19,
-        apiResourceName: 'images',
-        configurationApiResourceName: 'images/configuration'
-    }, {
-        name: 'GHT1T',
-        id: 20,
-        apiResourceName: 'images/ght1t',
-        configurationApiResourceName: 'zones-for-images'
-    }];
+    if (self.searchFields.endDate()) {
+        searchArguments.endDate = self.searchFields.endDate();
+    }
 
-    var ImageDialogSearchViewModel = function ImageDialogSearchViewModel(params /*, componentInfo*/) {
-        var self = this;
+    //todo: on devrait permettre de spécifier l'auteur plutôt que seulement 'mes images'
+    if (self.searchFields.myImages()) {
+        searchArguments.createdBy = self.api.user().userName;
+    }
 
-        self.zones = _knockout2.default.observableArray();
-        self.cloudinaryDirectories = _knockout2.default.observableArray();
-        self.cloudinarySubDirectories = _knockout2.default.observableArray();
-        self.settings = params || {};
-        self.api = self.settings.api;
+    if (self.searchFields.keywords()) {
+        searchArguments.keywords = self.searchFields.keywords();
+    }
 
-        // merge user-supplied config if present
-        self.allImageContentTypes = defaultImageContentTypes;
-        if (!_lodash2.default.isUndefined(params.imageSourceConfig)) {
-            if (_lodash2.default.has(params.imageSourceConfig, 'picto')) {
-                var pictoConfig = _lodash2.default.find(self.allImageContentTypes, {
-                    id: 19
-                });
-                _jquery2.default.extend(pictoConfig, params.imageSourceConfig['picto']);
+    if (self.searchFields.directoryCodeName()) {
+        searchArguments.directoryCodeName = self.searchFields.directoryCodeName();
+    }
+
+    if (self.searchFields.subDirectoryCodeName()) {
+        searchArguments.subDirectoryCodeName = self.searchFields.subDirectoryCodeName();
+    }
+
+    return searchArguments;
+};
+
+ImageDialogSearchViewModel.prototype.loadLookups = function() {
+    var self = this;
+
+    var contentTypesInUse = self.settings.contentTypeIds;
+    var pictoInUse = _.contains(contentTypesInUse, 19);
+    var ght1tInUse = _.contains(contentTypesInUse, 20);
+
+    var doPictoLookups = function() {
+        var configurationApiResourceName = _.find(self.allImageContentTypes, {
+            id: 19
+        }).configurationApiResourceName;
+        return self.api.getJson(configurationApiResourceName, {
+            success: function(cloudinaryLookups) {
+                self.cloudinaryDirectories(cloudinaryLookups.directoryCodeNames);
+                self.cloudinarySubDirectories(cloudinaryLookups.subDirectoryCodeNames);
             }
-            if (_lodash2.default.has(params.imageSourceConfig, 'ght1t')) {
-                var ght1tConfig = _lodash2.default.find(self.allImageContentTypes, {
-                    id: 20
-                });
-                _jquery2.default.extend(ght1tConfig, params.imageSourceConfig['ght1t']);
+        });
+    }
+
+    var doGht1tLookups = function() {
+        var configurationApiResourceName = _.find(self.allImageContentTypes, {
+            id: 20
+        }).configurationApiResourceName;
+        return self.api.getJson(configurationApiResourceName, {
+            success: function(zonesLookups) {
+                self.zones(zonesLookups);
             }
-        }
-
-        self.translated = {
-            dateInterval: _i18next2.default.t('koco-image-dialogs.date-interval'),
-            defaultTitle: _i18next2.default.t('koco-image-dialogs.notitle'),
-            myImages: _i18next2.default.t('koco-image-dialogs.image-search-results-default-title'),
-            allDirectoriesPlaceholder: _i18next2.default.t('koco-image-dialogs.image-search-placeholder-all-directories'),
-            allSubDirectoriesPlaceholder: _i18next2.default.t('koco-image-dialogs.image-search-placeholder-all-subdirectories'),
-            keywordsPlaceholder: _i18next2.default.t('koco-image-dialogs.image-search-placeholder-keywords'),
-            zonePlaceholder: _i18next2.default.t('koco-image-dialogs.image-search-placeholder-zone')
-        };
-
-        self.apiResourceName = _knockout2.default.pureComputed(function () {
-            var resourceName = _lodash2.default.find(self.allImageContentTypes, {
-                id: self.searchFields.contentTypeId()
-            }).apiResourceName;
-            return !_lodash2.default.isUndefined(resourceName) ? resourceName : '';
         });
+    }
 
-        self.contentTypes = _lodash2.default.filter(self.allImageContentTypes, function (contentType) {
-            return _lodash2.default.any(self.settings.contentTypeIds, function (contentTypeId) {
-                return contentType.id === contentTypeId;
-            });
-        });
+    // either do the lookup for the respective source, or 'false' which will fulfill
+    // that segment of the promise
+    return $.when(ght1tInUse ? doGht1tLookups.call(self) : false, pictoInUse ? doPictoLookups.call(self) : false);
+};
 
-        var contentDialogSearchViewModelParams = {
-            defaultSearchFields: defaultSearchFields,
-            isSame: params.isSame,
-            selected: params.selected,
-            searchOnDisplay: params.searchOnDisplay,
-            api: self.api,
-            apiResourceName: self.apiResourceName,
-            lastSearchSnapshot: _lastSearchSnapshot2.default
-        };
+ImageDialogSearchViewModel.prototype.correctLastSearchSnapshot = function(lastSearchSnapshot) {
+    var self = this;
 
-        _contentDialogSearchBaseViewmodel2.default.call(self, contentDialogSearchViewModelParams);
+    if (lastSearchSnapshot.searchFields) {
+        var searchFieldsContentTypeId = lastSearchSnapshot.searchFields.contentTypeId;
 
-        self.koDisposer.add(self.apiResourceName);
-
-        self.onImageRemoved = function (idAsUrl) {
-            self.items.remove(function (item) {
-                return item.idAsUrl === idAsUrl;
-            });
-        };
-
-        _kocoSignalEmitter2.default.addListener('image:removed', self.onImageRemoved);
-
-        self.activate();
-    };
-
-    ImageDialogSearchViewModel.prototype = Object.create(_contentDialogSearchBaseViewmodel2.default.prototype);
-    ImageDialogSearchViewModel.prototype.constructor = ImageDialogSearchViewModel;
-
-    ImageDialogSearchViewModel.prototype.getSearchArgumentsFromFields = function () {
-        var self = this;
-
-        //TODO: simplify this function
-
-        var searchArguments = {
-            zoneIds: self.searchFields.codeZones()
-        };
-
-        if (self.settings.dimensions) {
-            searchArguments.dimensions = encodeURIComponent(JSON.stringify(self.settings.dimensions));
-        }
-
-        if (self.searchFields.startDate()) {
-            searchArguments.startDate = self.searchFields.startDate();
-        }
-
-        if (self.searchFields.endDate()) {
-            searchArguments.endDate = self.searchFields.endDate();
-        }
-
-        //todo: on devrait permettre de spécifier l'auteur plutôt que seulement 'mes images'
-        if (self.searchFields.myImages()) {
-            searchArguments.createdBy = self.api.user().userName;
-        }
-
-        if (self.searchFields.keywords()) {
-            searchArguments.keywords = self.searchFields.keywords();
-        }
-
-        if (self.searchFields.directoryCodeName()) {
-            searchArguments.directoryCodeName = self.searchFields.directoryCodeName();
-        }
-
-        if (self.searchFields.subDirectoryCodeName()) {
-            searchArguments.subDirectoryCodeName = self.searchFields.subDirectoryCodeName();
-        }
-
-        return searchArguments;
-    };
-
-    ImageDialogSearchViewModel.prototype.loadLookups = function () {
-        var self = this;
-
-        var contentTypesInUse = self.settings.contentTypeIds;
-        var pictoInUse = _lodash2.default.contains(contentTypesInUse, 19);
-        var ght1tInUse = _lodash2.default.contains(contentTypesInUse, 20);
-
-        var doPictoLookups = function doPictoLookups() {
-            var configurationApiResourceName = _lodash2.default.find(self.allImageContentTypes, {
-                id: 19
-            }).configurationApiResourceName;
-            return self.api.getJson(configurationApiResourceName, {
-                success: function success(cloudinaryLookups) {
-                    self.cloudinaryDirectories(cloudinaryLookups.directoryCodeNames);
-                    self.cloudinarySubDirectories(cloudinaryLookups.subDirectoryCodeNames);
-                }
-            });
-        };
-
-        var doGht1tLookups = function doGht1tLookups() {
-            var configurationApiResourceName = _lodash2.default.find(self.allImageContentTypes, {
-                id: 20
-            }).configurationApiResourceName;
-            return self.api.getJson(configurationApiResourceName, {
-                success: function success(zonesLookups) {
-                    self.zones(zonesLookups);
-                }
-            });
-        };
-
-        // either do the lookup for the respective source, or 'false' which will fulfill
-        // that segment of the promise
-        return _jquery2.default.when(ght1tInUse ? doGht1tLookups.call(self) : false, pictoInUse ? doPictoLookups.call(self) : false);
-    };
-
-    ImageDialogSearchViewModel.prototype.correctLastSearchSnapshot = function (lastSearchSnapshot) {
-        var self = this;
-
-        if (lastSearchSnapshot.searchFields) {
-            var searchFieldsContentTypeId = lastSearchSnapshot.searchFields.contentTypeId;
-
-            if (!searchFieldsContentTypeId || !_lodash2.default.any(self.contentTypes, function (contentType) {
+        if (!searchFieldsContentTypeId || !_.any(self.contentTypes, function(contentType) {
                 return contentType.id === searchFieldsContentTypeId;
             })) {
-                lastSearchSnapshot.searchFields.contentTypeId = self.contentTypes[0].id;
-            }
+            lastSearchSnapshot.searchFields.contentTypeId = self.contentTypes[0].id;
         }
+    }
 
-        return lastSearchSnapshot;
-    };
+    return lastSearchSnapshot;
+};
 
-    ImageDialogSearchViewModel.prototype.dispose = function () {
-        var self = this;
+ImageDialogSearchViewModel.prototype.dispose = function() {
+    var self = this;
 
-        _contentDialogSearchBaseViewmodel2.default.prototype.dispose.call(self);
+    ContentDialogSearchViewModel.prototype.dispose.call(self);
 
-        _kocoSignalEmitter2.default.removeListener('image:removed', self.onImageRemoved);
-    };
+    signalEmitter.removeListener('image:removed', self.onImageRemoved);
+};
 
-    exports.default = {
-        viewModel: {
-            createViewModel: function createViewModel(params, componentInfo) {
-                return new ImageDialogSearchViewModel(params, componentInfo);
-            }
-        },
-        template: template
-    };
-});
+export default {
+    viewModel: {
+        createViewModel: function(params, componentInfo) {
+            return new ImageDialogSearchViewModel(params, componentInfo);
+        }
+    },
+    template: template
+};
