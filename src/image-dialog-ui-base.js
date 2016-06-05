@@ -12,8 +12,8 @@ import signalEmitter from 'koco-signal-emitter';
 
 
 var defaultParams = {
-    dimensions: [],
-    contentTypeIds: [20]
+  dimensions: [],
+  contentTypeIds: [20]
 };
 
 var ImageDialogBaseViewModel = function() {};
@@ -22,86 +22,85 @@ ImageDialogBaseViewModel.prototype = Object.create(ContentDialogViewModel.protot
 ImageDialogBaseViewModel.prototype.constructor = ImageDialogBaseViewModel;
 
 ImageDialogBaseViewModel.prototype.getHasSelectedItem = function() {
-    var self = this;
+  var self = this;
 
-    var selectedItem = koMappingUtilities.toJS(self.selectedItem);
+  var selectedItem = koMappingUtilities.toJS(self.selectedItem);
 
-    return selectedItem && selectedItem.idAsUrl;
+  return selectedItem && selectedItem.idAsUrl;
 };
 
 ImageDialogBaseViewModel.prototype.getIsCloudinary = function() {
-    var self = this;
+  var self = this;
 
-    var selectedItem = koMappingUtilities.toJS(self.selectedItem);
+  var selectedItem = koMappingUtilities.toJS(self.selectedItem);
 
-    if (selectedItem && selectedItem.contentType && selectedItem.contentType.id === 19) {
-        return true;
-    }
+  if (selectedItem && selectedItem.contentType && selectedItem.contentType.id === 19) {
+    return true;
+  }
 
-    return false;
+  return false;
 };
 
 ImageDialogBaseViewModel.prototype.getParams = function(settings) {
-    var self = this;
+  var self = this;
 
-    var params = $.extend({}, defaultParams, settings.params.settings);
+  var params = $.extend({}, defaultParams, settings.params.settings);
 
-    if (koco.router.context().route.url.indexOf('mu-contents') > -1) {
-        params.contentTypeIds = [19, 20];
-    }
+  if (koco.router.context().route.url.indexOf('mu-contents') > -1) {
+    params.contentTypeIds = [19, 20];
+  }
 
-    return params;
+  return params;
 };
 
 ImageDialogBaseViewModel.prototype.canDeleteImage = function() {
-    var self = this;
+  var self = this;
 
-    var resource = koMappingUtilities.toJS(self.selectedItem);
+  var resource = koMappingUtilities.toJS(self.selectedItem);
 
-    if (resource && resource.contentType && resource.contentType.id === 20 && resource.idAsUrl) {
-        return true;
-    }
+  if (resource && resource.contentType && resource.contentType.id === 20 && resource.idAsUrl) {
+    return true;
+  }
 
-    return false;
+  return false;
 };
 
 ImageDialogBaseViewModel.prototype.isSame = function(item) {
-    var self = this;
+  var self = this;
 
-    var selectedItem = koMappingUtilities.toJS(self.selectedItem);
+  var selectedItem = koMappingUtilities.toJS(self.selectedItem);
 
-    return selectedItem && item && selectedItem.idAsUrl === item.idAsUrl;
+  return selectedItem && item && selectedItem.idAsUrl === item.idAsUrl;
 };
 
 ImageDialogBaseViewModel.prototype.deleteImage = function() {
-    var self = this;
+  var self = this;
 
-    var resource = this.selectedItem();
-    if (typeof resource === 'undefined' || resource === null) {
-        toastr.error('Vous devez sélectionner une image.');
-        return false;
+  var resource = this.selectedItem();
+  if (typeof resource === 'undefined' || resource === null) {
+    toastr.error('Vous devez sélectionner une image.');
+    return false;
+  }
+
+  modaler.show('confirm', {
+    message: 'Attention, vous vous apprêtez à supprimer cette image de la banque d\'images (GHT1T). Voulez-vous réellement supprimer cette image?'
+  }).then((confirm) => {
+    if (confirm) {
+      var idAsUrl = resource.idAsUrl();
+
+      // @TODO test this more thoroughly, we are relying on the remove binding to provide a context that owns self.api
+
+      const url = _.template('images?url=<%= id %>')({ id: idAsUrl });
+      self.fetch(url, { method: 'DELETE' })
+        .then(() => {
+          signalEmitter.dispatch('image:removed', [idAsUrl]);
+          self.selectedItem(null);
+          toastr.info('L\'image a été supprimée.');
+        }).catch(() => {
+          toastr.error('Impossible de supprimer l\'image.');
+        });
     }
-
-    modaler.show('confirm', {
-        message: 'Attention, vous vous apprêtez à supprimer cette image de la banque d\'images (GHT1T). Voulez-vous réellement supprimer cette image?'
-    }).then(function(confirm) {
-        if (confirm) {
-
-            var idAsUrl = resource.idAsUrl();
-
-            // @TODO test this more thoroughly, we are relying on the remove binding to provide a context that owns self.api
-            self.api.delete(_.template('images?url=<%= id %>')({
-                    id: idAsUrl
-                }))
-                .done(function() {
-                    signalEmitter.dispatch('image:removed', [idAsUrl]);
-                    self.selectedItem(null);
-                    toastr.info('L\'image a été supprimée.');
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    toastr.error('Impossible de supprimer l\'image.');
-                });
-        }
-    });
+  });
 };
 
 export default ImageDialogBaseViewModel;
